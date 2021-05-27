@@ -49,7 +49,7 @@ half_zip = [(hálfur, ' hálfur', "(1\/2|½)"), (hálfan, ' hálfan', "(1\/2|½)
             (fractiongen, ' þriggja fjórðu', "(3\/4|¾)"), (nonoun, ' þrír fjórðu', "(3\/4|¾)")]
 
 
-two_ordinal_zip = [(annar, ' annar'),(annan, ' annan'), (öðrum, ' öðrum'),( annars, ' annars'),
+two_ordinal_zip = [(annar, ' annar'),(annan, ' annan'), (öðrum, ' öðrum'),( annars, ' annars'), # TODO: two times "annars"
                     (aðrir, ' aðrir'), (aðra, ' aðra'), (annarra, ' annarra'),
                     (önnur, ' önnur'), (annarri, ' annarri'), (annarrar, ' annarrar'),
                     (aðrar, ' aðrar'), (annað, ' annað'), (öðru, ' öðru'), (annars, ' annars'), (nonoun, ' annan')]

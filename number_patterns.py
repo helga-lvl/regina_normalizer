@@ -94,7 +94,7 @@ annarrar = r"[nl]vee-?(g?s?|[svo]?[fme]?)"
 aðrar = r"[nl]vf[no]-?(g?s?|[svo]?[fme]?)"
 annað = r"[nl]he[no]-?(g?s?|[svo]?[fme]?)"
 öðru = r"[nl]heþ-?(g?s?|[svo]?[fme]?)"
-annars = r"[nl][kh]ee-?(g?s?|[svo]?[fme]?)"
+annars = r"[nl][kh]ee-?(g?s?|[svo]?[fme]?)"  # TODO: double 'annars', merge
 
 # patterns for all ordinal numbers except 2. (see above)
 fyrsti = r"[nl]ken-?(g?s?|[svo]?[fme]?)"

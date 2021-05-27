@@ -10,7 +10,7 @@ decimal_thousands_tuples = [
 ((zeropnt_ptrn + "\d{4}0\d*$"), '.*', 'point5', ' núll'),
 ((zeropnt_ptrn + "\d{3}0\d*$"), '.*', 'point4', ' núll'),
 ((zeropnt_ptrn + "\d{2}0\d*$"), '.*', 'point3', ' núll'),
-((zeropnt_ptrn + "\d{2}0\d*$"), '.*', 'point2', ' núll'),
+((zeropnt_ptrn + "\d{2}0\d*$"), '.*', 'point2', ' núll'), #TODO: is this correct? two times {2}?
 ((zeropnt_ptrn + "0\d*$"), '.*', 'points', ' komma núll')]
 
 for rules in ones_zip + dec_ones_male:

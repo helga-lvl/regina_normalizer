@@ -25,10 +25,12 @@ import symbols_dict as sd
 
 
 tagger = pos.Tagger(
-    model_file="tagger-v2.0.0.pt",
+    model_file="reginafiles/tagger-v2.0.0.pt",
     device="cpu",
 )
 
+#TODO: improve naming, not good to have identical names for different things (
+# like cardinal_thousand_tuples = cardinal_thousand_tuples plus something else as well) (ABN)
 cardinal_thousand_tuples = cot.cardinal_ones_tuples + ctt.cardinal_thousands_tuples
 cardinal_million_tuples = cardinal_thousand_tuples + cmt.cardinal_million_tuples
 cardinal_big_tuples = cardinal_million_tuples + cbt.cardinal_big_tuples
