@@ -1,13 +1,12 @@
 ## Prerequisites
 
-Download POS tagger v2.0.0 from https://github.com/cadia-lvl/POS and have the file `tagger-v2.0.0.pt` in the same folder as all the files.
+`pip install git+https://github.com/cadia-lvl/POS.git@v3.0.0`
 
 `pip install tokenizer`
 
-## To run in notebook
+## Version to choose
 
-Run the import cells in `regina-notebook.ipynb` and then run `run_sentence(input, domain)` for an input sentence, the domain can be 'sport' or 'other'.
+You can choose to run a package-version (with tests) from command line in `regina_normalizer_pkg`, with a single text string where the output is returned on a command line or with a file and the output is written to another file. 
 
-## To run in command line (not recommended because the tagger has to be initialized for each sentence)
+or a simpler version in `regina_normalizer_no_pkg`. You can run the simple version from command line (for single text strings or input files) or in a jupyter notebook. 
 
-`python regina.py {sentence-to-be-normalized} {domain}`
