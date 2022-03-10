@@ -1,11 +1,15 @@
 
-from regina_normalizer import regina as r
+from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
+from regina_normalizer_pkg.regina_normalizer import number_functions as nf
 import pytest
 import re
 
 
 def normalize(sent, domain):
-    return r.handle_input(sent, domain)
+    abbr_sent = af.replace_abbreviations(sent, domain)
+    no_sent = nf.handle_sentence(abbr_sent, domain)
+    return no_sent
+
 
 def test_fraction():
     # masculine singular
@@ -46,5 +50,11 @@ def test_wlink():
     #assert re.sub("\s+", " ", normalize('helgas@ru.is', 'other').strip()) == 'helgas hjá r u punktur is' - rétt
     assert re.sub("\s+", " ", normalize('#ljosanott2014', 'other').strip()) == 'myllumerki l j o s a n o t t tvö þúsund og fjórtán'
     #assert re.sub("\s+", " ", normalize('#ljosanott2014', 'other').strip()) == 'myllumerki ljosanott tvö þúsund og fjórtán'
+
+def test_symbols():
+    #assert re.sub("\s+", " ",
+    #              normalize('að áramótum 2021/2022', 'other').strip()) == 'að áramótum tvö þúsund tuttugu og eitt <sil> tvö þúsund tuttugu og tvö'
+    assert re.sub("\s+", " ",
+                  normalize('Snýst í suðaustan 10-18 m/s', 'other').strip()) == 'Snýst í suðaustan tíu til átján metra á sekúndu'
 
     

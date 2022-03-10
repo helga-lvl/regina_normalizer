@@ -1,10 +1,16 @@
-from regina_normalizer import regina as r
+# there is not regina script anymore!
+#from regina_normalizer import regina as r
+from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
+from regina_normalizer_pkg.regina_normalizer import number_functions as nf
 import pytest
 import re
 
 
 def normalize(sent, domain):
-    return r.handle_input(sent, domain)
+    abbr_sent = af.replace_abbreviations(sent, domain)
+    no_sent = nf.handle_sentence(abbr_sent, domain)
+    return no_sent
+
 
 def test_prehelp():
     # masculine singular

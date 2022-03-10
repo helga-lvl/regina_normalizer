@@ -27,6 +27,7 @@ cardinal_big_ptrn = "^[1-9]\d{0,2}(\.\d{3}){2,3}$"
 decimal_thousand_ptrn = "^([1-9]\.?\d{3}|[1-9]\d{0,2}|0),\d+$"
 decimal_big_ptrn = "^[1-9]\d{0,2}\.?(\d{3}){1,3},\d+$"
 
+# TODO: provide examples of what patterns should be matched
 fraction_ptrn = "^([1-9]\d{0,2} ?)?([1-9]\d*\/([2-9]|[1-9]\d+)|(½|⅓|⅔|¼|¾))$"
 time_ptrn = "^(([01]?\d|2[0-4])[:\.][0-5]|0)\d$"
 sport_ptrn = "^(?!1\/2)([1-9]\d?\/[1-9]\d?)$"

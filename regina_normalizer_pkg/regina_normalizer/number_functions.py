@@ -150,9 +150,11 @@ def number_findall(word, tag, domain):
 
     elif re.findall(nh.fraction_ptrn, word):
         if domain == 'other' or re.findall("½|⅓|⅔|¼|¾", word):
+            # TODO: this does not solve patterns like '2021/2022' correctly (result: 'og hálfur')
             fraction_dict = make_dict(word, nh.decimal_cols_thousand)
             tmpword = fill_dict(word, tag, fraction_tuples, fraction_dict, nh.decimal_cols_thousand)
         elif domain == 'sport':
+            # TODO: this does not handle all patterns matched, only \d{1,2}/\d{1,2}!
             sport_dict = make_dict(word, nh.time_sport_cols)
             tmpword = fill_dict(word, tag, sport_tuples, sport_dict, nh.time_sport_cols)
      
