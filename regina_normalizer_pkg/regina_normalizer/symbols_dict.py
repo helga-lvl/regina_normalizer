@@ -1,5 +1,5 @@
 symb_dict = {"&": "og",
-        " / ": " skástrik ",
+        "/": " skástrik ",
         "\+": " plús ",
         "=": " jafnt og ",
         "≠": " ekki jafnt og ",

@@ -2,22 +2,27 @@
 #from regina_normalizer import regina as r
 from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
 from regina_normalizer_pkg.regina_normalizer import number_functions as nf
+from regina_normalizer_pkg.regina_normalizer import tokenizer
 import pytest
 import re
 
 
-def normalize(sent, domain):
-    abbr_sent = af.replace_abbreviations(sent, domain)
-    no_sent = nf.handle_sentence(abbr_sent, domain)
-    return no_sent
+def normalize(text, domain):
+    tok = tokenizer.Tokenizer()
+    sentences = tok.detect_sentences(text)
+    normalized = []
+    for sent in sentences:
+        abbr_sent = af.replace_abbreviations(sent, domain)
+        normalized.append(nf.handle_sentence(abbr_sent, domain))
+    return ' '.join(normalized)
 
 
 def test_prehelp():
     # masculine singular
     assert re.sub("\s+", " ", normalize('hún verður 2ja ára næsta sumar :)', 'other').strip()) == 'hún verður tveggja ára næsta sumar :)'
     assert re.sub("\s+", " ", normalize('hann er 3ja ára', 'other').strip()) == 'hann er þriggja ára'
-    assert re.sub("\s+", " ", normalize('hvort viltu 4ða, 5ta eða 6ta valkostinn?', 'other').strip()) == 'hvort viltu fjórða, fimmta eða sjötta valkostinn?'
-    assert re.sub("\s+", " ", normalize('þetta var ekki 7di valkosturinn, kannski 8di eða 9di', 'other').strip()) == 'þetta var ekki sjöundi valkosturinn, kannski áttundi eða níundi'
+    assert re.sub("\s+", " ", normalize('hvort viltu 4ða, 5ta eða 6ta valkostinn?', 'other').strip()) == 'hvort viltu fjórða , fimmta eða sjötta valkostinn ?'
+    assert re.sub("\s+", " ", normalize('þetta var ekki 7di valkosturinn, kannski 8di eða 9di', 'other').strip()) == 'þetta var ekki sjöundi valkosturinn , kannski áttundi eða níundi'
     assert re.sub("\s+", " ", normalize('tökum orðið 14EP30 í sundur', 'other').strip()) == 'tökum orðið fjórtán E P þrjátíu í sundur'
     assert re.sub("\s+", " ", normalize('það er 9,1°C', 'other').strip()) == 'það er níu komma ein gráða á selsíus'
     assert re.sub("\s+", " ", normalize('85,4% eru bólusett', 'other').strip()) == 'áttatíu og fimm komma fjögur prósent eru bólusett'
@@ -26,9 +31,9 @@ def test_prehelp():
 
 def test_abbreviations():
     assert re.sub("\s+", " ", normalize('5. gr. , 4. mgr. , 6. nmgr.', 'other').strip()) == 'fimmta grein , fjórða málsgrein , sjötta neðanmálsgrein'
-    assert re.sub("\s+", " ", normalize('Innsk. blm. árið 45 f.o.t. eða f.Kr. eða ca 21 e.Kr.', 'other').strip()) == 'innskot blaðamanns árið fjörutíu og fimm fyrir okkar tímatal eða fyrir Krist eða sirka tuttugu og eitt eftir Krist'
-    assert re.sub("\s+", " ", normalize('5. sek. , 6. mín.', 'other').strip()) == 'fimmta sekúnda , sjötta mínúta'
-    assert re.sub("\s+", " ", normalize('hann var með 24/14 frák. , 4 stoðs.', 'sport').strip()) == 'hann var með tuttugu og fjögur <sil> fjórtán fráköst , fjórar stoðsendingar'
+    assert re.sub("\s+", " ", normalize('Innsk. blm. árið 45 f.o.t. eða f.Kr. eða ca 21 e.Kr.', 'other').strip()) == 'innskot blaðamanns árið fjörutíu og fimm fyrir okkar tímatal eða fyrir Krist eða sirka tuttugu og eitt eftir Krist .'
+    assert re.sub("\s+", " ", normalize('5. sek. , 6. mín.', 'other').strip()) == 'fimmta sekúnda , sjötta mínúta .'
+    assert re.sub("\s+", " ", normalize('hann var með 24/14 frák. , 4 stoðs.', 'sport').strip()) == 'hann var með tuttugu og fjögur <sil> fjórtán fráköst , fjórar stoðsendingar .'
     assert re.sub("\s+", " ", normalize('5. apr. nk. er sýning frá Bland ehf. og það er atr. þar', 'other').strip()) == 'fimmta apríl næstkomandi er sýning frá Bland E H F og það er atriði þar'
     assert re.sub("\s+", " ", normalize('ATH að það má ekki klappa í f.hl. en s.hl. er í lagi', 'other').strip()) == 'athugið að það má ekki klappa í fyrri hluti en síðari hluti er í lagi'
     #assert re.sub("\s+", " ", normalize('ATH að það má ekki klappa í f.hl. en s.hl. er í lagi', 'other').strip()) == 'athugið að það má ekki klappa í fyrri hluta en síðari hluti er í lagi'
@@ -39,17 +44,17 @@ def test_abbreviations():
     assert re.sub("\s+", " ", normalize('það er e.k. rof , etv e-ð skrítið í gangi', 'other').strip()) == 'það er einhvers konar rof , ef til vill eitthvað skrítið í gangi'
     assert re.sub("\s+", " ", normalize('það er e-s konar rof , grf að það hafi komið e-ju skrítnu í gang', 'other').strip()) == 'það er einhvers konar rof , gerum ráð fyrir að það hafi komið einhverju skrítnu í gang'
     assert re.sub("\s+", " ", normalize('það er e-r maður þarna með e-n hund og í e-um jakka', 'other').strip()) == 'það er einhver maður þarna með einhvern hund og í einhverjum jakka'
-    assert re.sub("\s+", " ", normalize('hann var með 24/14 frák. , 4 stoðs.', 'sport').strip()) == 'hann var með tuttugu og fjögur <sil> fjórtán fráköst , fjórar stoðsendingar'
+    assert re.sub("\s+", " ", normalize('hann var með 24/14 frák. , 4 stoðs.', 'sport').strip()) == 'hann var með tuttugu og fjögur <sil> fjórtán fráköst , fjórar stoðsendingar .'
     assert re.sub("\s+", " ", normalize('hvað er að gerast í frt ? fél. var stofnað', 'other').strip()) == 'hvað er að gerast í framtíð ? félag var stofnað'
-    assert re.sub("\s+", " ", normalize('GMG þetta er ekki í lagi , er þessi maður hdl ? varla hrl.', 'other').strip()) == 'guð minn góður þetta er ekki í lagi , er þessi maður héraðsdómslögmaður ? varla hæstaréttarlögmaður'
+    assert re.sub("\s+", " ", normalize('GMG þetta er ekki í lagi , er þessi maður hdl ? varla hrl.', 'other').strip()) == 'guð minn góður þetta er ekki í lagi , er þessi maður héraðsdómslögmaður ? varla hæstaréttarlögmaður .'
     assert re.sub("\s+", " ", normalize('höf. þessarar bókar er hr. júlli jóns', 'other').strip()) == 'höfundur þessarar bókar er herra júlli jóns'
     assert re.sub("\s+", " ", normalize('hv. þingmaður er h.u.b. verstur í þetta starf', 'other').strip()) == 'háttvirtur þingmaður er hér um bil verstur í þetta starf'
-    assert re.sub("\s+", " ", normalize('Kt: 180679-3529 , rn. 532-26-2342', 'other').strip()) == 'kennitala: einn átta núll sex sjö níu <sil> þrír fimm tveir níu , reikningsnúmer fimm þrír tveir <sil> tveir sex <sil> tveir þrír fjórir tveir'
+    assert re.sub("\s+", " ", normalize('Kt: 180679-3529 , rn. 532-26-2342', 'other').strip()) == 'kennitala : einn átta núll sex sjö níu <sil> þrír fimm tveir níu , reikningsnúmer fimm þrír tveir <sil> tveir sex <sil> tveir þrír fjórir tveir'
     assert re.sub("\s+", " ", normalize('er blær í kk , kvk eða hk ?', 'other').strip()) == 'er blær í karlkyn , kvenkyn eða hvorugkyn ?'
     #assert re.sub("\s+", " ", normalize('er blær í kk , kvk eða hk ?', 'other').strip()) == 'er blær í karlkyni , kvenkyni eða hvorugkyni ?'
-    assert re.sub("\s+", " ", normalize('ég er frá Sltjn en bjó í STHLM en svo KBH , hjólandi er lh.nt. , hjóluð er lh.þt.', 'other').strip()) == 'ég er frá Seltjarnarnes en bjó í Stokkhólmur en svo Kaupmannahöfn , hjólandi er lýsingarháttur nútíðar , hjóluð er lýsingarháttur þátíðar'
+    assert re.sub("\s+", " ", normalize('ég er frá Sltjn en bjó í STHLM en svo KBH , hjólandi er lh.nt. , hjóluð er lh.þt.', 'other').strip()) == 'ég er frá Seltjarnarnes en bjó í Stokkhólmur en svo Kaupmannahöfn , hjólandi er lýsingarháttur nútíðar , hjóluð er lýsingarháttur þátíðar .'
     #assert re.sub("\s+", " ", normalize('ég er frá sltjn. en bjó í STHLM en svo KBH , hjólandi er lh.nt. , hjóluð er lh.þt.', 'other').strip()) == 'ég er frá Seltjarnarnesi en bjó í stokkhólmi en svo kaupmannahöfn , hjólandi er lýsingarháttur nútíðar , hjóluð er lýsingarháttur þátíðar'
-    assert re.sub("\s+", " ", normalize('rvk geothermal ltd er m.a. 500 m.y.s.', 'other').strip()) == 'Reykjavík geothermal limited er meðal annars fimm hundruð metra yfir sjávarmáli'
+    assert re.sub("\s+", " ", normalize('rvk geothermal ltd er m.a. 500 m.y.s.', 'other').strip()) == 'Reykjavík geothermal limited er meðal annars fimm hundruð metra yfir sjávarmáli .'
     assert re.sub("\s+", " ", normalize('það er m.a.s. sól m.t.t. roksins', 'other').strip()) == 'það er meira að segja sól með tilliti til roksins'
     assert re.sub("\s+", " ", normalize('þetta er m.ö.o. ekki í lagi m.v. að þetta voru 100 fm', 'other').strip()) == 'þetta er með öðrum orðum ekki í lagi miðað við að þetta voru hundrað fermetrar'
     assert re.sub("\s+", " ", normalize('Mfl KR er m.a.o. í svörtum búningum o.fl.', 'other').strip()) == 'meistaraflokkur K R er meðal annarra orða í svörtum búningum og fleira'
@@ -156,7 +161,7 @@ def test_time():
     assert re.sub("\s+", " ", normalize('hér eru 22 mín um 5 mín frá 15 mín til 356 mín', 'other').strip()) == 'hér eru tuttugu og tvær mínútur um fimm mínútur frá fimmtán mínútum til þrjú hundruð fimmtíu og sex mínútna'
     # tagger fails
     #assert re.sub("\s+", " ", normalize('hér er 21 sek um 1 sek frá 151 sek. til 351 sek.', 'other').strip()) == 'hér er tuttugu og ein sekúnda um eina sekúndu frá hundrað fimmtíu og einni sekúndu til þrjú hundruð fimmtíu og einnar sekúndu'
-    assert re.sub("\s+", " ", normalize('hér eru 22 sek um 5 sek frá 15 sek. til 356 sek.', 'other').strip()) == 'hér eru tuttugu og tvær sekúndur um fimm sekúndur frá fimmtán sekúndum til þrjú hundruð fimmtíu og sex sekúndna'
+    assert re.sub("\s+", " ", normalize('hér eru 22 sek um 5 sek frá 15 sek. til 356 sek.', 'other').strip()) == 'hér eru tuttugu og tvær sekúndur um fimm sekúndur frá fimmtán sekúndum til þrjú hundruð fimmtíu og sex sekúndna .'
     # tagger fails
     #assert re.sub("\s+", " ", normalize('hér er 21 s um 1 s frá 151 s til 351 s', 'other').strip()) == 'hér er tuttugu og ein sekúnda um eina sekúndu frá hundrað fimmtíu og einni sekúndu til þrjú hundruð fimmtíu og einnar sekúndu'
     assert re.sub("\s+", " ", normalize('hér eru 22 s um 5 s frá 15 s til 356 s', 'other').strip()) == 'hér eru tuttugu og tvær sekúndur um fimm sekúndur frá fimmtán sekúndum til þrjú hundruð fimmtíu og sex sekúndna'
@@ -171,12 +176,12 @@ def test_time():
     #assert re.sub("\s+", " ", normalize('hér eru 22 klst um 5 mín frá 15 ms til 356 msek frá 12 sek', 'other').strip()) == 'hér eru tuttugu og tvær klukkustundir um fimm mínútur frá fimmtán millisekúndum til þrjú hundruð fimmtíu og sex millisekúndna frá tólf sekúndum'  
 
 def test_currency():
-    assert re.sub("\s+", " ", normalize('hér er 21 ma.kr. um 1000 kr.- frá 32 mkr. til 201 kr.', 'other').strip()) == 'hér er tuttugu og einn milljarður króna um þúsund krónur frá þrjátíu og tveimur milljónum króna til tvö hundruð og einnar krónu'
-    assert re.sub("\s+", " ", normalize(' 100 CHF , 243 CAD , 23 CZK , 12 mkr.', 'other').strip()) == 'hundrað svissneskir frankar , tvö hundruð fjörutíu og þrír kanadískir dalir , tuttugu og þrjár tékkneskar krónur , tólf milljónir króna'
+    assert re.sub("\s+", " ", normalize('hér er 21 ma.kr. um 1000 kr.- frá 32 mkr. til 201 kr.', 'other').strip()) == 'hér er tuttugu og einn milljarður króna um þúsund krónur <sil> frá þrjátíu og tveimur milljónum króna til tvö hundruð og einnar krónu .'
+    assert re.sub("\s+", " ", normalize(' 100 CHF , 243 CAD , 23 CZK , 12 mkr.', 'other').strip()) == 'hundrað svissneskir frankar , tvö hundruð fjörutíu og þrír kanadískir dalir , tuttugu og þrjár tékkneskar krónur , tólf milljónir króna .'
     assert re.sub("\s+", " ", normalize('20 DKK , 32 SEK , 32 NOK , 2 EUR , 3 GBP', 'other').strip()) == 'tuttugu danskar krónur , þrjátíu og tvær sænskar krónur , þrjátíu og tvær norskar krónur , tvær evrur , þrjú sterlingspund'
     assert re.sub("\s+", " ", normalize('12 INR , 24 ISK , 342 JPY', 'other').strip()) == 'tólf indverskar rúpíur , tuttugu og fjórar íslenskar krónur , þrjú hundruð fjörutíu og tvö japönsk jen'
     assert re.sub("\s+", " ", normalize('234 PTE , 122 AUD , 2 USD', 'other').strip()) == 'tvö hundruð þrjátíu og fjórir portúgalskir skútar , hundrað tuttugu og tveir ástralskir dalir , tveir bandaríkjadalir'
-    assert re.sub("\s+", " ", normalize('21 mljó , 32 mlja.', 'other').strip()) == 'tuttugu og ein milljón , þrjátíu og tveir milljarðar'
+    assert re.sub("\s+", " ", normalize('21 mljó , 32 mlja.', 'other').strip()) == 'tuttugu og ein milljón , þrjátíu og tveir milljarðar .'
     assert re.sub("\s+", " ", normalize('$49 um $23 frá $1 til 12 $', 'other').strip()) == 'fjörutíu og níu dollarar um tuttugu og þrjá dollara frá einum dollara til tólf dollara'
     assert re.sub("\s+", " ", normalize('£49 um £23 frá £1 til 12 £', 'other').strip()) == 'fjörutíu og níu pund um tuttugu og þrjú pund frá einu pundi til tólf punda'
     assert re.sub("\s+", " ", normalize('¥49 um ¥23 frá ¥1 til 12 ¥', 'other').strip()) == 'fjörutíu og níu japönsk jen um tuttugu og þrjú japönsk jen frá einu japönsku jeni til tólf japanskra jena'

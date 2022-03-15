@@ -1,22 +1,27 @@
 
 from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
 from regina_normalizer_pkg.regina_normalizer import number_functions as nf
+from regina_normalizer_pkg.regina_normalizer import tokenizer
 import pytest
 import re
 
 
-def normalize(sent, domain):
-    abbr_sent = af.replace_abbreviations(sent, domain)
-    no_sent = nf.handle_sentence(abbr_sent, domain)
-    return no_sent
+def normalize(text, domain):
+    tok = tokenizer.Tokenizer()
+    sentences = tok.detect_sentences(text)
+    normalized = []
+    for sent in sentences:
+        abbr_sent = af.replace_abbreviations(sent, domain)
+        normalized.append(nf.handle_sentence(abbr_sent, domain))
+    return ' '.join(normalized)
 
 
 def test_fraction():
     # masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1½ vini', 'other').strip()) == 'ég fékk gjöf frá einum og hálfum vini'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva ⅓ skóg?', 'other').strip()) == 'ætlarðu að höggva einn þriðja skóg?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva ⅓ skóg?', 'other').strip()) == 'ætlarðu að höggva einn þriðja skóg ?'
     assert re.sub("\s+", " ", normalize('það voru 11⅔ stóll þarna', 'other').strip()) == 'það voru ellefu og tveir þriðju stóll þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til ¾ manna?', 'other').strip()) == 'ætlarðu til þriggja fjórðu manna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til ¾ manna?', 'other').strip()) == 'ætlarðu til þriggja fjórðu manna ?'
     # feminine singular
     assert normalize('11/6 konur', 'other').strip() == 'ellefu sjöttu konur'
     #assert re.sub("\s+", " ", normalize('það var talað um 1 5/6 konu', 'other').strip()) == 'það var talað um eina og fimm sjöttu konu'
@@ -29,7 +34,7 @@ def test_fraction():
 def test_sport():
     assert re.sub("\s+", " ", normalize('Leikurinn fór 2 - 1', 'sport').strip()) == 'Leikurinn fór tvö eitt'
     assert re.sub("\s+", " ", normalize('Lokatölur voru 33 : 77 fyrir Keflavík', 'sport').strip()) == 'Lokatölur voru þrjátíu og þrjú : sjötíu og sjö fyrir Keflavík'
-    assert re.sub("\s+", " ", normalize('33/17 , 8/5 frák.', 'sport').strip()) == 'þrjátíu og þrjú <sil> sautján , átta <sil> fimm fráköst'
+    assert re.sub("\s+", " ", normalize('33/17 , 8/5 frák.', 'sport').strip()) == 'þrjátíu og þrjú <sil> sautján , átta <sil> fimm fráköst .'
 
 def test_time():
     assert re.sub("\s+", " ", normalize('Klukkan er 14:10', 'other').strip()) == 'Klukkan er fjórtán tíu'
@@ -52,9 +57,9 @@ def test_wlink():
     #assert re.sub("\s+", " ", normalize('#ljosanott2014', 'other').strip()) == 'myllumerki ljosanott tvö þúsund og fjórtán'
 
 def test_symbols():
-    #assert re.sub("\s+", " ",
-    #              normalize('að áramótum 2021/2022', 'other').strip()) == 'að áramótum tvö þúsund tuttugu og eitt <sil> tvö þúsund tuttugu og tvö'
     assert re.sub("\s+", " ",
-                  normalize('Snýst í suðaustan 10-18 m/s', 'other').strip()) == 'Snýst í suðaustan tíu til átján metra á sekúndu'
+                  normalize('að áramótum 2021/2022', 'other').strip()) == 'að áramótum tvö þúsund tuttugu og eitt skástrik tvö þúsund tuttugu og tvö'
+    assert re.sub("\s+", " ",
+                  normalize('Snýst í suðaustan 10-18 m/s', 'other').strip()) == 'Snýst í suðaustan tíu til átján metrar á sekúndu'
 
     

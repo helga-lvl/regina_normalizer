@@ -1,79 +1,83 @@
-
 from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
 from regina_normalizer_pkg.regina_normalizer import number_functions as nf
+from regina_normalizer_pkg.regina_normalizer import tokenizer
 import pytest
 import re
 
 
-def normalize(sent, domain):
-    abbr_sent = af.replace_abbreviations(sent, domain)
-    no_sent = nf.handle_sentence(abbr_sent, domain)
-    return no_sent
+def normalize(text, domain):
+    tok = tokenizer.Tokenizer()
+    sentences = tok.detect_sentences(text)
+    normalized = []
+    for sent in sentences:
+        abbr_sent = af.replace_abbreviations(sent, domain)
+        normalized.append(nf.handle_sentence(abbr_sent, domain))
+    return ' '.join(normalized)
 
 
 def test_ones_ord():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1. vininum', 'other').strip()) == 'ég fékk gjöf frá fyrsta vininum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3. skóginn?', 'other').strip()) == 'ætlarðu að höggva þriðja skóginn?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3. skóginn?', 'other').strip()) == 'ætlarðu að höggva þriðja skóginn ?'
     assert re.sub("\s+", " ", normalize('það var 4. stóllinn þarna', 'other').strip()) == 'það var fjórði stóllinn þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 5. mannsins?', 'other').strip()) == 'ætlarðu til fimmta mannsins?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 5. mannsins?', 'other').strip()) == 'ætlarðu til fimmta mannsins ?'
     # feminine singular
     assert normalize('6. konan', 'other').strip() == 'sjötta konan'
     assert re.sub("\s+", " ", normalize('það var talað um 7. konuna', 'other').strip()) == 'það var talað um sjöundu konuna'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 8. vinkonunni', 'other').strip()) == 'ég fékk gjöf frá áttundu vinkonunni'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 9. konunnar?', 'other').strip()) == 'ætlarðu til níundu konunnar?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 9. konunnar?', 'other').strip()) == 'ætlarðu til níundu konunnar ?'
     # neutral singular
     assert normalize('10. borðið', 'other').strip() == 'tíunda borðið'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 11. tréð?', 'other').strip()) == 'ætlarðu að höggva ellefta tréð?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 11. tréð?', 'other').strip()) == 'ætlarðu að höggva ellefta tréð ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 12. barninu', 'other').strip()) == 'ég fékk gjöf frá tólfta barninu'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 13. landsins?', 'other').strip()) == 'ætlarðu til þrettánda landsins?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 13. landsins?', 'other').strip()) == 'ætlarðu til þrettánda landsins ?'
     # masculine plural
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 14. vinunum', 'other').strip()) == 'ég fékk gjöf frá fjórtándu vinunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 15. skógana?', 'other').strip()) == 'ætlarðu að höggva fimmtándu skógana?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 15. skógana?', 'other').strip()) == 'ætlarðu að höggva fimmtándu skógana ?'
     assert re.sub("\s+", " ", normalize('það voru 16. stólarnir þarna', 'other').strip()) == 'það voru sextándu stólarnir þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 17. mannanna?', 'other').strip()) == 'ætlarðu til sautjándu mannanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 17. mannanna?', 'other').strip()) == 'ætlarðu til sautjándu mannanna ?'
     # feminine plural
     assert normalize('18. konurnar', 'other').strip() == 'átjándu konurnar'
     assert re.sub("\s+", " ", normalize('það var talað um 19. konurnar', 'other').strip()) == 'það var talað um nítjándu konurnar'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1. vinkonunum', 'other').strip()) == 'ég fékk gjöf frá fyrstu vinkonunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 3. kvennanna?', 'other').strip()) == 'ætlarðu til þriðju kvennanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 3. kvennanna?', 'other').strip()) == 'ætlarðu til þriðju kvennanna ?'
     # neutral plural
     assert normalize('4. borðin', 'other').strip() == 'fjórðu borðin'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 7. trén?', 'other').strip()) == 'ætlarðu að höggva sjöundu trén?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 7. trén?', 'other').strip()) == 'ætlarðu að höggva sjöundu trén ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 13. börnunum', 'other').strip()) == 'ég fékk gjöf frá þrettándu börnunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 17. landanna?', 'other').strip()) == 'ætlarðu til sautjándu landanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 17. landanna?', 'other').strip()) == 'ætlarðu til sautjándu landanna ?'
 
 def test_two_ord():
     # masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. vininum', 'other').strip()) == 'ég fékk gjöf frá öðrum vininum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. skóginn?', 'other').strip()) == 'ætlarðu að höggva annan skóginn?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. skóginn?', 'other').strip()) == 'ætlarðu að höggva annan skóginn ?'
     assert re.sub("\s+", " ", normalize('það var 2. stóllinn þarna', 'other').strip()) == 'það var annar stóllinn þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. mannsins?', 'other').strip()) == 'ætlarðu til annars mannsins?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. mannsins?', 'other').strip()) == 'ætlarðu til annars mannsins ?'
     # feminine singular
     assert normalize('2. konan', 'other').strip() == 'önnur konan'
     assert re.sub("\s+", " ", normalize('það var talað um 2. konuna', 'other').strip()) == 'það var talað um aðra konuna'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. vinkonunni', 'other').strip()) == 'ég fékk gjöf frá annarri vinkonunni'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. konunnar?', 'other').strip()) == 'ætlarðu til annarrar konunnar?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. konunnar?', 'other').strip()) == 'ætlarðu til annarrar konunnar ?'
     # neutral singular
     assert normalize('2. borðið', 'other').strip() == 'annað borðið'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. tréð?', 'other').strip()) == 'ætlarðu að höggva annað tréð?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. tréð?', 'other').strip()) == 'ætlarðu að höggva annað tréð ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. barninu', 'other').strip()) == 'ég fékk gjöf frá öðru barninu'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. landsins?', 'other').strip()) == 'ætlarðu til annars landsins?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. landsins?', 'other').strip()) == 'ætlarðu til annars landsins ?'
 
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. vinunum', 'other').strip()) == 'ég fékk gjöf frá öðrum vinunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. skógana?', 'other').strip()) == 'ætlarðu að höggva aðra skógana?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. skógana?', 'other').strip()) == 'ætlarðu að höggva aðra skógana ?'
     assert re.sub("\s+", " ", normalize('það voru 2. stólarnir þarna', 'other').strip()) == 'það voru aðrir stólarnir þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. mannanna?', 'other').strip()) == 'ætlarðu til annarra mannanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. mannanna?', 'other').strip()) == 'ætlarðu til annarra mannanna ?'
     # feminine singular
     assert normalize('2. konurnar', 'other').strip() == 'aðrar konurnar'
     assert re.sub("\s+", " ", normalize('það var talað um 2. konurnar', 'other').strip()) == 'það var talað um aðrar konurnar'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. vinkonunum', 'other').strip()) == 'ég fékk gjöf frá öðrum vinkonunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. kvennanna?', 'other').strip()) == 'ætlarðu til annarra kvennanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. kvennanna?', 'other').strip()) == 'ætlarðu til annarra kvennanna ?'
     # neutral singular
     assert normalize('2. borðin', 'other').strip() == 'önnur borðin'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. trén?', 'other').strip()) == 'ætlarðu að höggva önnur trén?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2. trén?', 'other').strip()) == 'ætlarðu að höggva önnur trén ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2. börnunum', 'other').strip()) == 'ég fékk gjöf frá öðrum börnunum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2. landanna?', 'other').strip()) == 'ætlarðu til annarra landanna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2. landanna?', 'other').strip()) == 'ætlarðu til annarra landanna ?'
 
 
 def test_no_context_ord():

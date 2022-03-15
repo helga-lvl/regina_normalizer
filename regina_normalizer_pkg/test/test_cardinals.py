@@ -1,82 +1,87 @@
 from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
 from regina_normalizer_pkg.regina_normalizer import number_functions as nf
+from regina_normalizer_pkg.regina_normalizer import tokenizer
 import pytest
 import re
 
 
-def normalize(sent, domain):
-    abbr_sent = af.replace_abbreviations(sent, domain)
-    no_sent = nf.handle_sentence(abbr_sent, domain)
-    return no_sent
+def normalize(text, domain):
+    tok = tokenizer.Tokenizer()
+    sentences = tok.detect_sentences(text)
+    normalized = []
+    for sent in sentences:
+        abbr_sent = af.replace_abbreviations(sent, domain)
+        normalized.append(nf.handle_sentence(abbr_sent, domain))
+    return ' '.join(normalized)
 
 
 def test_one_card():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1 vini', 'other').strip()) == 'ég fékk gjöf frá einum vini'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 1 skóg?', 'other').strip()) == 'ætlarðu að höggva einn skóg?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 1 skóg?', 'other').strip()) == 'ætlarðu að höggva einn skóg ?'
     assert re.sub("\s+", " ", normalize('það var 1 stóll þarna', 'other').strip()) == 'það var einn stóll þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 1 manns?', 'other').strip()) == 'ætlarðu til eins manns?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 1 manns?', 'other').strip()) == 'ætlarðu til eins manns ?'
     # feminine singular
     assert normalize('1 kona', 'other').strip() == 'ein kona'
     assert re.sub("\s+", " ", normalize('það var talað um 1 konu', 'other').strip()) == 'það var talað um eina konu'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1 vinkonu', 'other').strip()) == 'ég fékk gjöf frá einni vinkonu'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 1 konu?', 'other').strip()) == 'ætlarðu til einnar konu?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 1 konu?', 'other').strip()) == 'ætlarðu til einnar konu ?'
     # neutral singular
     assert normalize('1 borð', 'other').strip() == 'eitt borð'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 1 tré?', 'other').strip()) == 'ætlarðu að höggva eitt tré?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 1 tré?', 'other').strip()) == 'ætlarðu að höggva eitt tré ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 1 barni', 'other').strip()) == 'ég fékk gjöf frá einu barni'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 1 lands?', 'other').strip()) == 'ætlarðu til eins lands?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 1 lands?', 'other').strip()) == 'ætlarðu til eins lands ?'
 
 def test_two_card():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2 vinum', 'other').strip()) == 'ég fékk gjöf frá tveimur vinum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2 skóga?', 'other').strip()) == 'ætlarðu að höggva tvo skóga?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2 skóga?', 'other').strip()) == 'ætlarðu að höggva tvo skóga ?'
     assert re.sub("\s+", " ", normalize('það voru 2 stólar þarna', 'other').strip()) == 'það voru tveir stólar þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2 manna?', 'other').strip()) == 'ætlarðu til tveggja manna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2 manna?', 'other').strip()) == 'ætlarðu til tveggja manna ?'
     # feminine singular
     assert normalize('2 konur', 'other').strip() == 'tvær konur'
     assert re.sub("\s+", " ", normalize('það var talað um 2 konur', 'other').strip()) == 'það var talað um tvær konur'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2 vinkonum', 'other').strip()) == 'ég fékk gjöf frá tveimur vinkonum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2 kvenna?', 'other').strip()) == 'ætlarðu til tveggja kvenna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2 kvenna?', 'other').strip()) == 'ætlarðu til tveggja kvenna ?'
     # neutral singular
     assert normalize('2 borð', 'other').strip() == 'tvö borð'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2 tré?', 'other').strip()) == 'ætlarðu að höggva tvö tré?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 2 tré?', 'other').strip()) == 'ætlarðu að höggva tvö tré ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 2 börnum', 'other').strip()) == 'ég fékk gjöf frá tveimur börnum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 2 landa?', 'other').strip()) == 'ætlarðu til tveggja landa?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 2 landa?', 'other').strip()) == 'ætlarðu til tveggja landa ?'
 
 def test_three_card():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 3 vinum', 'other').strip()) == 'ég fékk gjöf frá þremur vinum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3 skóga?', 'other').strip()) == 'ætlarðu að höggva þrjá skóga?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3 skóga?', 'other').strip()) == 'ætlarðu að höggva þrjá skóga ?'
     assert re.sub("\s+", " ", normalize('það voru 3 stólar þarna', 'other').strip()) == 'það voru þrír stólar þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 3 manna?', 'other').strip()) == 'ætlarðu til þriggja manna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 3 manna?', 'other').strip()) == 'ætlarðu til þriggja manna ?'
     # feminine singular
     assert normalize('3 konur', 'other').strip() == 'þrjár konur'
     assert re.sub("\s+", " ", normalize('það var talað um 3 konur', 'other').strip()) == 'það var talað um þrjár konur'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 3 vinkonum', 'other').strip()) == 'ég fékk gjöf frá þremur vinkonum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 3 kvenna?', 'other').strip()) == 'ætlarðu til þriggja kvenna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 3 kvenna?', 'other').strip()) == 'ætlarðu til þriggja kvenna ?'
     # neutral singular
     assert normalize('3 borð', 'other').strip() == 'þrjú borð'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3 tré?', 'other').strip()) == 'ætlarðu að höggva þrjú tré?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 3 tré?', 'other').strip()) == 'ætlarðu að höggva þrjú tré ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 3 börnum', 'other').strip()) == 'ég fékk gjöf frá þremur börnum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 3 landa?', 'other').strip()) == 'ætlarðu til þriggja landa?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 3 landa?', 'other').strip()) == 'ætlarðu til þriggja landa ?'
 
 def test_four_card():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 4 vinum', 'other').strip()) == 'ég fékk gjöf frá fjórum vinum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 4 skóga?', 'other').strip()) == 'ætlarðu að höggva fjóra skóga?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 4 skóga?', 'other').strip()) == 'ætlarðu að höggva fjóra skóga ?'
     assert re.sub("\s+", " ", normalize('það voru 4 stólar þarna', 'other').strip()) == 'það voru fjórir stólar þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 4 manna?', 'other').strip()) == 'ætlarðu til fjögurra manna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 4 manna?', 'other').strip()) == 'ætlarðu til fjögurra manna ?'
     # feminine singular
     assert normalize('4 konur', 'other').strip() == 'fjórar konur'
     assert re.sub("\s+", " ", normalize('það var talað um 4 konur', 'other').strip()) == 'það var talað um fjórar konur'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 4 vinkonum', 'other').strip()) == 'ég fékk gjöf frá fjórum vinkonum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 4 kvenna?', 'other').strip()) == 'ætlarðu til fjögurra kvenna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 4 kvenna?', 'other').strip()) == 'ætlarðu til fjögurra kvenna ?'
     # neutral singular
     assert normalize('4 borð', 'other').strip() == 'fjögur borð'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 4 tré?', 'other').strip()) == 'ætlarðu að höggva fjögur tré?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 4 tré?', 'other').strip()) == 'ætlarðu að höggva fjögur tré ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 4 börnum', 'other').strip()) == 'ég fékk gjöf frá fjórum börnum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 4 landa?', 'other').strip()) == 'ætlarðu til fjögurra landa?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 4 landa?', 'other').strip()) == 'ætlarðu til fjögurra landa ?'
 
 def test_no_context_card():
 	# masculine singular
@@ -88,22 +93,22 @@ def test_no_context_card():
 def test_other_ones_card():
 	# masculine singular
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 5 vinum', 'other').strip()) == 'ég fékk gjöf frá fimm vinum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 6 skóga?', 'other').strip()) == 'ætlarðu að höggva sex skóga?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 6 skóga?', 'other').strip()) == 'ætlarðu að höggva sex skóga ?'
     assert re.sub("\s+", " ", normalize('það voru 7 stólar þarna', 'other').strip()) == 'það voru sjö stólar þarna'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 8 manna?', 'other').strip()) == 'ætlarðu til átta manna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 8 manna?', 'other').strip()) == 'ætlarðu til átta manna ?'
     # feminine singular
     assert normalize('9 konur', 'other').strip() == 'níu konur'
     assert re.sub("\s+", " ", normalize('það var talað um 10 konur', 'other').strip()) == 'það var talað um tíu konur'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 11 vinkonum', 'other').strip()) == 'ég fékk gjöf frá ellefu vinkonum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 12 kvenna?', 'other').strip()) == 'ætlarðu til tólf kvenna?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 12 kvenna?', 'other').strip()) == 'ætlarðu til tólf kvenna ?'
     # neutral singular
     assert normalize('13 borð', 'other').strip() == 'þrettán borð'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 14 tré?', 'other').strip()) == 'ætlarðu að höggva fjórtán tré?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 14 tré?', 'other').strip()) == 'ætlarðu að höggva fjórtán tré ?'
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 15 börnum', 'other').strip()) == 'ég fékk gjöf frá fimmtán börnum'
-    assert re.sub("\s+", " ", normalize('ætlarðu til 16 landa?', 'other').strip()) == 'ætlarðu til sextán landa?'
+    assert re.sub("\s+", " ", normalize('ætlarðu til 16 landa?', 'other').strip()) == 'ætlarðu til sextán landa ?'
 
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 17 vinum', 'other').strip()) == 'ég fékk gjöf frá sautján vinum'
-    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 18 skóga?', 'other').strip()) == 'ætlarðu að höggva átján skóga?'
+    assert re.sub("\s+", " ", normalize('ætlarðu að höggva 18 skóga?', 'other').strip()) == 'ætlarðu að höggva átján skóga ?'
     assert re.sub("\s+", " ", normalize('það voru 19 stólar þarna', 'other').strip()) == 'það voru nítján stólar þarna'
 
 def test_onehundred_card():
@@ -119,7 +124,7 @@ def test_onehundred_card():
     assert re.sub("\s+", " ", normalize('21.004 menn', 'other').strip()) == 'tuttugu og eitt þúsund og fjórir menn'
     assert re.sub("\s+", " ", normalize('21.020. mennirnir', 'other').strip()) == 'tuttugu og eitt þúsund og tuttugustu mennirnir'
     assert re.sub("\s+", " ", normalize('21.304 menn', 'other').strip()) == 'tuttugu og eitt þúsund þrjú hundruð og fjórir menn'
-    assert re.sub("\s+", " ", normalize('1000 kr.', 'other').strip()) == 'þúsund krónur'
+    assert re.sub("\s+", " ", normalize('1000 kr.', 'other').strip()) == 'þúsund krónur .'
 
 def test_dozens_card():
     assert re.sub("\s+", " ", normalize('ég fékk gjöf frá 21 vini', 'other').strip()) == 'ég fékk gjöf frá tuttugu og einum vini'
@@ -146,7 +151,7 @@ def test_tens_card():
     assert re.sub("\s+", " ", normalize('1200,5 börn', 'other').strip()) == 'tólf hundruð komma fimm börn'
     assert re.sub("\s+", " ", normalize('1532 konur', 'other').strip()) == 'fimmtán hundruð þrjátíu og tvær konur'
     assert re.sub("\s+", " ", normalize('16.124 ungmenni', 'other').strip()) == 'sextán þúsund eitt hundrað tuttugu og fjögur ungmenni'
-    assert re.sub("\s+", " ", normalize('1800 kr.', 'other').strip()) == 'átján hundruð krónur'
+    assert re.sub("\s+", " ", normalize('1800 kr.', 'other').strip()) == 'átján hundruð krónur .'
     assert re.sub("\s+", " ", normalize('árið var 1923', 'other').strip()) == 'árið var nítján hundruð tuttugu og þrjú'
     assert re.sub("\s+", " ", normalize('árið var 1922', 'other').strip()) == 'árið var nítján hundruð tuttugu og tvö'
     assert re.sub("\s+", " ", normalize('árið var 1903', 'other').strip()) == 'árið var nítján hundruð og þrjú'
