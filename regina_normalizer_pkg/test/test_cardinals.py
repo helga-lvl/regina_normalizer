@@ -1,6 +1,6 @@
-from regina_normalizer_pkg.regina_normalizer import abbr_functions as af
-from regina_normalizer_pkg.regina_normalizer import number_functions as nf
-from regina_normalizer_pkg.regina_normalizer import tokenizer
+from regina_normalizer import abbr_functions as af
+from regina_normalizer import number_functions as nf
+from regina_normalizer import tokenizer
 import pytest
 import re
 
