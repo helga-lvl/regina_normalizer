@@ -60,6 +60,8 @@ def test_symbols():
     assert re.sub("\s+", " ",
                   normalize('að áramótum 2021/2022', 'other').strip()) == 'að áramótum tvö þúsund tuttugu og eitt skástrik tvö þúsund tuttugu og tvö'
     assert re.sub("\s+", " ",
-                  normalize('Snýst í suðaustan 10-18 m/s', 'other').strip()) == 'Snýst í suðaustan tíu til átján metrar á sekúndu'
+                  normalize('10-18 m/s', 'other').strip()) == 'tíu til átján metrar á sekúndu'
+    assert re.sub("\s+", " ",
+                  normalize('snjókoma NV-til fyrri part dags.', 'other').strip()) == 'snjókoma norðvestan til fyrri part dags .'
 
     
